@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The New Navy — Study Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1628;
+    --deep: #0d1f3c;
+    --mid: #1a3a6b;
+    --steel: #2e5d9f;
+    --brass: #c9a227;
+    --gold: #f0c040;
+    --parchment: #f4efe0;
+    --cream: #fdf8ec;
+    --text: #1a1a2e;
+    --light: #e8dfc8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    color: var(--parchment);
+    font-family: 'Crimson Text', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.6;
+    background-image: 
+      radial-gradient(ellipse at 20% 50%, rgba(30, 60, 120, 0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(14, 40, 90, 0.4) 0%, transparent 40%);
+    min-height: 100vh;
+  }
+
+  header {
+    text-align: center;
+    padding: 3rem 2rem 2rem;
+    border-bottom: 2px solid var(--brass);
+    background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent);
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '⚓';
+    position: absolute;
+    font-size: 12rem;
+    opacity: 0.04;
+    top: -2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-shadow: 0 2px 20px rgba(240,192,64,0.4);
+  }
+
+  header p {
+    color: var(--light);
+    margin-top: 0.5rem;
+    font-style: italic;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+  }
+
+  .tab-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    padding: 1.5rem 2rem 0;
+    border-bottom: 2px solid var(--brass);
+  }
+
+  .tab {
+    padding: 0.75rem 2rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    border: 1px solid rgba(201,162,39,0.3);
+    border-bottom: none;
+    background: transparent;
+    color: var(--light);
+    transition: all 0.2s;
+    position: relative;
+    bottom: -2px;
+  }
+
+  .tab:hover { color: var(--gold); background: rgba(201,162,39,0.1); }
+  .tab.active {
+    background: var(--navy);
+    color: var(--gold);
+    border-color: var(--brass);
+    border-bottom: 2px solid var(--navy);
+  }
+
+  .section { display: none; padding: 2rem; max-width: 1000px; margin: 0 auto; }
+  .section.active { display: block; }
+
+  /* ── FLASHCARDS ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .card-wrap { perspective: 1000px; height: 200px; cursor: pointer; }
+  .card-inner {
+    width: 100%; height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .card-wrap.flipped .card-inner { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+    border-radius: 8px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border: 1px solid rgba(201,162,39,0.4);
+  }
+
+  .card-front {
+    background: linear-gradient(135deg, var(--deep) 0%, var(--mid) 100%);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  .card-front .term {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+  }
+
+  .card-front .hint {
+    font-size: 0.75rem;
+    color: rgba(232,223,200,0.5);
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+
+  .card-back {
+    background: linear-gradient(135deg, #1a3a0a 0%, #0f2a08 100%);
+    transform: rotateY(180deg);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--parchment);
+    border-color: rgba(80,180,80,0.4);
+    overflow-y: auto;
+  }
+
+  .card-back .answer { font-size: 0.88rem; }
+
+  .flip-hint {
+    text-align: center;
+    color: rgba(232,223,200,0.4);
+    font-style: italic;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  /* ── QUIZ ── */
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .quiz-header h2 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 1.4rem;
+  }
+
+  .progress-bar {
+    width: 200px;
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--steel), var(--gold));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  .question-box {
+    background: linear-gradient(135deg, var(--deep), var(--mid));
+    border: 1px solid rgba(201,162,39,0.3);
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+
+  .q-number {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--brass);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.75rem;
+  }
+
+  .q-text {
+    font-size: 1.15rem;
+    color: var(--cream);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+
+  .options { display: grid; gap: 0.6rem; }
+
+  .option {
+    padding: 0.75rem 1.2rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--parchment);
+    font-family: 'Crimson Text', serif;
+    font-size: 1rem;
+    text-align: left;
+    transition: all 0.2s;
+  }
+
+  .option:hover:not(.selected) {
+    background: rgba(46,93,159,0.3);
+    border-color: var(--steel);
+    transform: translateX(4px);
+  }
+
+  .option.correct { background: rgba(40,120,40,0.3); border-color: #4caf50; color: #a8e6a8; }
+  .option.wrong { background: rgba(140,30,30,0.3); border-color: #ef5350; color: #ffcdd2; }
+  .option.selected { pointer-events: none; }
+
+  .feedback {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    display: none;
+  }
+
+  .feedback.show { display: block; }
+  .feedback.correct-fb { background: rgba(40,120,40,0.2); border-left: 3px solid #4caf50; color: #c8e6c9; }
+  .feedback.wrong-fb { background: rgba(140,30,30,0.2); border-left: 3px solid #ef5350; color: #ffcdd2; }
+
+  .quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+  }
+
+  .btn {
+    padding: 0.65rem 1.8rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    border: 1px solid var(--brass);
+    border-radius: 5px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--gold);
+    transition: all 0.2s;
+  }
+
+  .btn:hover { background: rgba(201,162,39,0.15); box-shadow: 0 0 15px rgba(201,162,39,0.2); }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .btn.primary { background: var(--brass); color: var(--navy); font-weight: 700; }
+  .btn.primary:hover { background: var(--gold); }
+
+  .score-display {
+    text-align: center;
+    padding: 3rem 2rem;
+  }
+
+  .score-display .score-big {
+    font-family: 'Cinzel', serif;
+    font-size: 5rem;
+    color: var(--gold);
+    text-shadow: 0 0 30px rgba(240,192,64,0.5);
+  }
+
+  .score-display p { color: var(--light); margin-top: 0.5rem; font-size: 1.1rem; }
+
+  /* ── REFERENCE SHEET ── */
+  .ref-section {
+    margin-bottom: 2rem;
+    border: 1px solid rgba(201,162,39,0.2);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .ref-title {
+    background: linear-gradient(to right, var(--mid), var(--deep));
+    padding: 0.75rem 1.2rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid rgba(201,162,39,0.2);
+  }
+
+  .ref-body {
+    padding: 1rem 1.2rem;
+    background: rgba(255,255,255,0.02);
+  }
+
+  .ref-body p { margin-bottom: 0.4rem; font-size: 0.95rem; color: var(--parchment); }
+  .ref-body strong { color: var(--gold); font-weight: 600; }
+
+  .score-count { font-family: 'Cinzel', serif; font-size: 0.9rem; color: var(--light); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>THE NEW NAVY</h1>
+  <p>Study Sheet · Mahan &amp; Naval Rebirth · 1865–1895</p>
+</header>
+
+<div class="tab-bar">
+  <button class="tab active" onclick="showTab('flashcards')">⚓ Flashcards</button>
+  <button class="tab" onclick="showTab('quiz')">⚡ Quiz</button>
+  <button class="tab" onclick="showTab('reference')">📜 Reference</button>
+</div>
+
+<!-- FLASHCARDS -->
+<div class="section active" id="flashcards">
+  <p class="flip-hint">Click any card to reveal the answer</p>
+  <div class="cards-grid" id="cardsGrid"></div>
+</div>
+
+<!-- QUIZ -->
+<div class="section" id="quiz">
+  <div class="quiz-header">
+    <h2>Practice Quiz</h2>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <span class="score-count" id="scoreCount">Score: 0/0</span>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div id="quizContent"></div>
+</div>
+
+<!-- REFERENCE -->
+<div class="section" id="reference">
+  <div id="refContent"></div>
+</div>
+
+<script>
+// ── DATA ──
+const flashcards = [
+  { term: "Naval Retrenchment", hint: "Post-Civil War decline", answer: "After the Civil War, the U.S. Navy shrank from 671 ships to only 147 by 1875, ranking 12th in the world behind Britain, France, Russia, Germany and others. Funding focused only on maintenance; ships rotted. Government priorities were Reconstruction, debt, and westward expansion." },
+  { term: "Peacetime Naval Mission", hint: "What did the Navy do in peace?", answer: "Protection of maritime trade overseas and 'showing the flag.' SECNAV Gideon Welles: 'In time of peace our naval force should be actively employed in visiting every commercial port where American capital is employed.' Diplomacy and commerce protection were key roles." },
+  { term: "Self-Propelled Torpedo", hint: "Invented 1866", answer: "Invented in 1866 by Robert Whitehead (British). A self-propelled underwater weapon that revolutionized naval warfare and forced navies to rethink ship design and tactics." },
+  { term: "Sea Mines", hint: "Horned, 1870s", answer: "The horned sea mine (1870s) was developed by Albert Hertz (Prussian). Contact mines that detonate when a ship's hull strikes one of the protruding horns. Changed harbor defense and naval strategy." },
+  { term: "Torpedo Boats", hint: "HMS Lightning", answer: "Small, fast surface vessels designed to deliver torpedo attacks. HMS Lightning (1876) was the first purpose-built torpedo boat. Threatened larger warships and led to development of torpedo boat destroyers." },
+  { term: "Submarines", hint: "Le Plongeur, 1863", answer: "Le Plongeur (1863) was the first submarine propelled by mechanical (compressed air) power — a French design. Submarines changed naval warfare by allowing underwater attacks on surface ships." },
+  { term: "Evolution of Ship Construction", hint: "Steel, armor, engines", answer: "Steel hulls replaced iron; armored decks protected vulnerable areas; breech-loading rifled guns increased accuracy and rate of fire; triple-expansion steam engines enabled 7,500-mile range on 500 tons of coal; transition from coal to oil fuel." },
+  { term: "ABCD Ships (1883)", hint: "Atlanta, Boston, Chicago, Dolphin", answer: "The first four modern U.S. Navy ships, construction began 1883 under SECNAV William Hunt. Named Atlanta, Boston, Chicago, and Dolphin. Featured double steel hulls, heavy armor, rifled breech-loading guns, and electricity. First 'all-steel' American warships — a boon for the steel industry." },
+  { term: "Korean Expedition (1871)", hint: "RADM Rodgers, 5 ships", answer: "Led by Rear Admiral John Rodgers with 5 ships and 650 men (including 100 Marines). Mission: open diplomatic/trade relations with Korea. After being fired upon, Rodgers attacked three Korean forts, killing 243 Koreans. Trade mission ultimately failed." },
+  { term: "Cuban Insurrection / Virginius Affair (1873)", hint: "53 executed", answer: "The Virginius was an American ship hired by Cuban insurrectionists to supply their revolution against Spain. It had an American and British crew. Spain captured the ship and executed 53 crew members for piracy, creating enormous international tension. The U.S. nearly declared war. Settlement: Spain paid reparations. The affair sparked a modest naval renaissance." },
+  { term: "U.S. Naval Institute", hint: "Founded 1873", answer: "Founded 1873. Published 'Proceedings' — a professional journal featuring articles on current and future naval warfare topics. Replaced unproductive shouting matches with constructive professional discourse. Fostered intellectual development in the Navy." },
+  { term: "Office of Naval Intelligence (ONI)", hint: "Founded 1882", answer: "Established 1882. Mission: study foreign navies and remain current on foreign naval strength, strategy, and tactics. Relied on an expanding network of American naval attachés stationed abroad." },
+  { term: "Naval War College", hint: "RADM Luce, 1884", answer: "Founded 1884 by RADM Stephen B. Luce. Purpose: 'Apply modern scientific methods to the study and raise naval warfare from the empirical stage to the dignity of a science.' Provided graduate-level study in strategy, tactics, and war plans." },
+  { term: "RADM Stephen B. Luce", hint: "Founder of Naval War College", answer: "Rear Admiral Stephen B. Luce founded the Naval War College in 1884. Believed naval warfare should be studied scientifically rather than learned only through experience. He brought Alfred Thayer Mahan to teach there, which led to Mahan's groundbreaking work." },
+  { term: "RADM Alfred Thayer Mahan", hint: "Sea Power theorist", answer: "Rear Admiral Alfred Thayer Mahan was assigned to the Naval War College by Luce. His lectures became 'The Influence of Sea Power upon History' (1890). He argued that naval power was the key to national greatness and his ideas influenced navies worldwide." },
+  { term: "The Influence of Sea Power upon History", hint: "Published 1890", answer: "Mahan's landmark 1890 work arguing that naval history teaches permanent strategic lessons; the oceans are a 'great highway' for maritime trade; and a nation achieves power by controlling the sea through its naval fleet. Enormously influential on U.S. and foreign navies." },
+  { term: "Sea Control / Command of the Sea", hint: "Mahan's goal", answer: "Mahan's central strategic concept: the goal of sea power is to achieve 'command of the sea' — dominance over naval forces sufficient to control maritime trade routes. This requires defeating the enemy fleet, not just raiding commerce." },
+  { term: "Six Conditions of Sea Power", hint: "Mahan's framework", answer: "1. Geographical position, 2. Physical conformation (coastline, harbors), 3. Extent of territory, 4. Population, 5. Character of the people, 6. Character of the government. These conditions determine a nation's potential for sea power." },
+  { term: "Views on Commerce Raiding", hint: "Mahan disagreed with it", answer: "Mahan argued that commerce raiding (guerre de course) CANNOT achieve 'command of the sea.' While it can disrupt enemy trade, it cannot defeat the enemy fleet or establish decisive sea control. It is a secondary strategy, not a war-winning one." },
+  { term: "Role of Battleships", hint: "Backbone of the fleet", answer: "Mahan argued battleships should be the backbone of any navy. The primary objective should always be the enemy fleet. Battleships concentrated firepower to seek decisive fleet engagements and achieve command of the sea." },
+  { term: "Influence of Mahan on World Navies", hint: "TR, Tirpitz, Japan", answer: "Mahan's work influenced Theodore Roosevelt (U.S.), Alfred von Tirpitz (Germany, who built the High Seas Fleet to challenge Britain), and Japan (which aggressively expanded its battleship fleet). His ideas drove the worldwide naval arms race of the late 19th–early 20th centuries." },
+];
+
+const quizQuestions = [
+  {
+    q: "By 1875, what was the U.S. Navy's ranking among world navies?",
+    options: ["5th", "8th", "12th", "2nd"],
+    answer: 2,
+    explain: "By 1875, the U.S. Navy ranked 12th, behind Britain, France, Russia, Germany, Holland, Spain, Italy, Turkey, China, Norway-Sweden, and Austria-Hungary."
+  },
+  {
+    q: "What event in 1873 sparked a modest naval renaissance in the United States?",
+    options: ["Korean Expedition", "Virginius Affair", "Battle of Manila Bay", "ABCD Ship launch"],
+    answer: 1,
+    explain: "The Virginius Affair (1873) — Spain's capture and execution of 53 American/British crew — nearly caused war with Spain and shocked the U.S. into beginning naval modernization."
+  },
+  {
+    q: "What does 'ABCD' stand for in the ABCD Ships?",
+    options: ["American Battle Cruiser Design", "Atlanta, Boston, Chicago, Dolphin", "Armored, Breech-loading, Coal-powered, Double-hulled", "Advanced Battle Cruiser Destroyers"],
+    answer: 1,
+    explain: "ABCD refers to the names of the four ships: USS Atlanta, USS Boston, USS Chicago, and USS Dolphin — built beginning in 1883."
+  },
+  {
+    q: "Who invented the self-propelled torpedo in 1866?",
+    options: ["Albert Hertz", "Stephen B. Luce", "Robert Whitehead", "Alfred Thayer Mahan"],
+    answer: 2,
+    explain: "Robert Whitehead (British engineer) invented the self-propelled torpedo in 1866."
+  },
+  {
+    q: "What was the primary mission of the Office of Naval Intelligence (ONI) founded in 1882?",
+    options: ["Develop new weapons", "Study foreign navies and track their strength/strategy/tactics", "Train naval officers", "Manage coaling stations"],
+    answer: 1,
+    explain: "The ONI's mission was to study foreign navies and remain up-to-date on foreign naval strength, strategy, and tactics, relying on a network of naval attachés."
+  },
+  {
+    q: "Who founded the Naval War College in 1884?",
+    options: ["Alfred Thayer Mahan", "SECNAV William Hunt", "RADM Stephen B. Luce", "Gideon Welles"],
+    answer: 2,
+    explain: "RADM Stephen B. Luce founded the Naval War College in 1884 with the goal of applying scientific methods to the study of naval warfare."
+  },
+  {
+    q: "According to Mahan, what is the goal of sea power?",
+    options: ["Commerce raiding", "Coastal defense", "Command of the Sea", "Amphibious operations"],
+    answer: 2,
+    explain: "Mahan argued the goal of sea power is 'command of the sea' — controlling maritime routes by defeating the enemy fleet in decisive engagement."
+  },
+  {
+    q: "What is Mahan's view on commerce raiding (guerre de course)?",
+    options: ["It is the best naval strategy", "It cannot achieve command of the sea", "It should replace battleships", "It is only useful in peacetime"],
+    answer: 1,
+    explain: "Mahan argued commerce raiding cannot achieve 'command of the sea.' Only decisive fleet engagement with battleships can establish true naval dominance."
+  },
+  {
+    q: "How many conditions affecting sea power did Mahan identify?",
+    options: ["4", "5", "6", "8"],
+    answer: 2,
+    explain: "Mahan identified six conditions: geographical position, physical conformation, extent of territory, population, character of the people, and character of the government."
+  },
+  {
+    q: "Which foreign naval leader was most directly influenced by Mahan to build Germany's High Seas Fleet?",
+    options: ["Kaiser Wilhelm II", "Alfred von Tirpitz", "Otto von Bismarck", "Helmuth von Moltke"],
+    answer: 1,
+    explain: "Alfred von Tirpitz used Mahan's sea power theories to justify and build Germany's High Seas Fleet, which challenged British naval supremacy."
+  },
+  {
+    q: "The Korean Expedition of 1871 was led by which officer?",
+    options: ["RADM Stephen B. Luce", "RADM Alfred Thayer Mahan", "Rear Admiral John Rodgers", "SECNAV William Hunt"],
+    answer: 2,
+    explain: "Rear Admiral John Rodgers led the Korean Expedition with 5 ships and 650 men to open trade relations. After being fired upon, he attacked three Korean forts."
+  },
+  {
+    q: "What was the primary government focus that caused U.S. naval decline after the Civil War?",
+    options: ["Building the transcontinental railroad only", "Reconstruction, federal debt, and westward expansion", "Fighting the Spanish empire", "Developing steam technology"],
+    answer: 1,
+    explain: "The government focused internally: Reconstruction of the South, paying off the massive Civil War debt, and supporting westward expansion. Navy funding was minimal."
+  },
+  {
+    q: "Which was the first submarine propelled by mechanical power?",
+    options: ["USS Holland", "HMS Lightning", "Le Plongeur (1863)", "CSS Hunley"],
+    answer: 2,
+    explain: "Le Plongeur (1863) was a French design and the first submarine propelled by mechanical power (compressed air)."
+  },
+  {
+    q: "What advancement in steam engines allowed warships to travel 7,500 miles on a single load of coal?",
+    options: ["Single-expansion engine", "Triple-expansion engine", "Steam turbine", "Nuclear reactor"],
+    answer: 1,
+    explain: "The triple-expansion engine, introduced by Navy Chief Engineer George Melville in the late 1880s, gave ships a 7,500-mile range on 500 tons of coal."
+  },
+  {
+    q: "The U.S. Naval Institute was founded in 1873 and published which journal?",
+    options: ["Naval Review", "Proceedings", "Sea Power Quarterly", "The Naval Gazette"],
+    answer: 1,
+    explain: "The U.S. Naval Institute published 'Proceedings,' a professional journal that replaced unproductive debates with constructive intellectual discourse on naval topics."
+  },
+];
+
+// ── RENDER FLASHCARDS ──
+const grid = document.getElementById('cardsGrid');
+flashcards.forEach((fc, i) => {
+  const wrap = document.createElement('div');
+  wrap.className = 'card-wrap';
+  wrap.innerHTML = `
+    <div class="card-inner">
+      <div class="card-face card-front">
+        <div class="term">${fc.term}</div>
+        <div class="hint">${fc.hint}</div>
+      </div>
+      <div class="card-face card-back">
+        <div class="answer">${fc.answer}</div>
+      </div>
+    </div>
+  `;
+  wrap.addEventListener('click', () => wrap.classList.toggle('flipped'));
+  grid.appendChild(wrap);
+});
+
+// ── QUIZ ──
+let qIndex = 0;
+let score = 0;
+let answered = false;
+const shuffled = [...quizQuestions].sort(() => Math.random() - 0.5);
+
+function renderQuestion() {
+  answered = false;
+  const total = shuffled.length;
+  document.getElementById('progressFill').style.width = (qIndex / total * 100) + '%';
+  document.getElementById('scoreCount').textContent = `Score: ${score}/${qIndex}`;
+
+  if (qIndex >= total) {
+    showScore(); return;
+  }
+
+  const q = shuffled[qIndex];
+  const html = `
+    <div class="question-box">
+      <div class="q-number">QUESTION ${qIndex + 1} OF ${total}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">
+        ${q.options.map((opt, i) => `<button class="option" onclick="selectAnswer(${i})">${String.fromCharCode(65+i)}. ${opt}</button>`).join('')}
+      </div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+    <div class="quiz-nav">
+      <span></span>
+      <button class="btn primary" id="nextBtn" onclick="nextQuestion()" disabled>Next →</button>
+    </div>
+  `;
+  document.getElementById('quizContent').innerHTML = html;
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = shuffled[qIndex];
+  const opts = document.querySelectorAll('.option');
+  const fb = document.getElementById('feedback');
+  const isCorrect = idx === q.answer;
+
+  opts[idx].classList.add('selected', isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) opts[q.answer].classList.add('correct');
+
+  fb.className = 'feedback show ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+  fb.textContent = (isCorrect ? '✓ Correct! ' : '✗ Incorrect. ') + q.explain;
+
+  if (isCorrect) score++;
+  document.getElementById('scoreCount').textContent = `Score: ${score}/${qIndex + 1}`;
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQuestion() {
+  qIndex++;
+  renderQuestion();
+}
+
+function showScore() {
+  const pct = Math.round(score / shuffled.length * 100);
+  const msg = pct >= 90 ? "Outstanding — Admiral material!" : pct >= 75 ? "Well done, officer." : pct >= 60 ? "Solid effort — review the missed topics." : "Time to hit the books again.";
+  document.getElementById('quizContent').innerHTML = `
+    <div class="score-display">
+      <div class="score-big">${pct}%</div>
+      <p>${score} / ${shuffled.length} correct</p>
+      <p style="margin-top:0.5rem;font-style:italic;color:var(--brass)">${msg}</p>
+      <button class="btn primary" style="margin-top:2rem" onclick="resetQuiz()">Retake Quiz</button>
+    </div>
+  `;
+  document.getElementById('progressFill').style.width = '100%';
+}
+
+function resetQuiz() {
+  qIndex = 0; score = 0;
+  shuffled.sort(() => Math.random() - 0.5);
+  renderQuestion();
+}
+
+renderQuestion();
+
+// ── REFERENCE ──
+const refData = [
+  { title: "POST-CIVIL WAR NAVAL DECLINE", items: [
+    "<strong>End of Civil War:</strong> 671 ships, 4,610 guns, 58,000 sailors, 71 ironclads",
+    "<strong>By 1875:</strong> 147 ships, many rotting, 26 without steam. Ranked 12th in the world.",
+    "<strong>Causes:</strong> Reconstruction, federal debt, westward expansion, internal focus, isolationism",
+    "<strong>Mission:</strong> Protect maritime trade overseas; 'show the flag'"
+  ]},
+  { title: "TECHNOLOGICAL ADVANCES", items: [
+    "<strong>Self-Propelled Torpedo (1866):</strong> Invented by Robert Whitehead (British)",
+    "<strong>Horned Sea Mine (1870s):</strong> Developed by Albert Hertz (Prussian)",
+    "<strong>Torpedo Boat:</strong> HMS Lightning (1876) — first purpose-built torpedo boat",
+    "<strong>Submarine:</strong> Le Plongeur (1863) — first mechanically-propelled submarine (French)",
+    "<strong>Guns:</strong> Rifling → accuracy/range; breech loading → rate of fire; smokeless powder; armor-piercing shells",
+    "<strong>Engines:</strong> Triple-expansion steam engine (Melville) → 7,500-mile range on 500 tons of coal",
+    "<strong>Materials:</strong> Iron hulls → steel hulls; iron armor → steel-plated armor → all-steel"
+  ]},
+  { title: "CATALYSTS FOR NAVAL REBIRTH", items: [
+    "<strong>Korean Expedition (1871):</strong> RADM John Rodgers; 5 ships, 650 men; opened trade talks; attacked 3 forts, 243 Koreans killed",
+    "<strong>Virginius Affair (1873):</strong> Cuban insurrection ship; American/British crew; 53 executed by Spain; near-war; reparations paid; sparked naval renaissance",
+    "<strong>SECNAV William Hunt:</strong> Declared wooden ships insufficient; pushed for modernization (1880)",
+  ]},
+  { title: "INSTITUTIONAL DEVELOPMENT", items: [
+    "<strong>U.S. Naval Institute (1873):</strong> Published 'Proceedings'; professional discourse on naval warfare",
+    "<strong>Office of Naval Intelligence (1882):</strong> Tracked foreign navies; network of attachés",
+    "<strong>Naval War College (1884):</strong> Founded by RADM Stephen B. Luce; scientific study of naval strategy, tactics, and war plans"
+  ]},
+  { title: "NEW SHIPS", items: [
+    "<strong>ABCD Ships (1883):</strong> USS Atlanta, Boston, Chicago, Dolphin — first all-steel American warships; double steel hulls, rifled breech-loaders, electricity",
+    "<strong>USS Maine & Texas (1895):</strong> Armored cruisers",
+    "<strong>Indiana-class Battleships (1895):</strong> First true U.S. battleships"
+  ]},
+  { title: "MAHAN'S SEA POWER THEORY", items: [
+    "<strong>Book:</strong> 'The Influence of Sea Power upon History' (1890)",
+    "<strong>Core Idea:</strong> Oceans are a 'great highway'; controlling them = national power",
+    "<strong>Goal:</strong> 'Command of the Sea' through decisive fleet engagement",
+    "<strong>Battleships:</strong> Backbone of any navy; primary objective is the enemy fleet",
+    "<strong>Commerce Raiding:</strong> Cannot achieve command of the sea — a secondary strategy only",
+    "<strong>Strategy:</strong> 'Offensive defense' — attack enemies far from U.S. shores; need coaling stations; protect a Panama Canal"
+  ]},
+  { title: "SIX CONDITIONS OF SEA POWER (MAHAN)", items: [
+    "1. <strong>Geographical Position</strong>",
+    "2. <strong>Physical Conformation</strong> (coastline, harbors)",
+    "3. <strong>Extent of Territory</strong>",
+    "4. <strong>Population</strong>",
+    "5. <strong>Character of the People</strong>",
+    "6. <strong>Character of the Government</strong>"
+  ]},
+  { title: "MAHAN'S GLOBAL INFLUENCE", items: [
+    "<strong>United States:</strong> Theodore Roosevelt embraced Mahan's ideas; drove U.S. naval expansion",
+    "<strong>Germany:</strong> Alfred von Tirpitz used Mahan to justify building the High Seas Fleet",
+    "<strong>Japan:</strong> Aggressively expanded battleship fleet using Mahan's framework",
+    "<strong>Legacy:</strong> Triggered worldwide naval arms race in late 19th–early 20th centuries"
+  ]},
+];
+
+const refContainer = document.getElementById('refContent');
+refData.forEach(sec => {
+  const div = document.createElement('div');
+  div.className = 'ref-section';
+  div.innerHTML = `
+    <div class="ref-title">${sec.title}</div>
+    <div class="ref-body">${sec.items.map(i => `<p>• ${i}</p>`).join('')}</div>
+  `;
+  refContainer.appendChild(div);
+});
+
+// ── TABS ──
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
